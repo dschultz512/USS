@@ -1,0 +1,963 @@
+
+components:
+  schemas:
+
+    InformationObjectTypeType:
+      type: string
+      enum: [ "Change", "Comment", "DataSet", "Event", "Operational Location", "Operational LocationClass", "Personnel Class", "Person", "Equipment Class", "Equipment", "Physical Asset Class", "Physical Asset", "Material Class", "Material Definition", "Material Lot", "Material SubLot", "Process Segment", "Test Specification", "Test Result", "Sample", "Property Measurement", "Operations Event Class", "Operations Event Definition", "Operations Event", "Operations Definition", "Operations Segment", "Operations Schedule", "Operations Request", "Operations Performance", "Operations Response", "Operations Capability", "Resource Relationship Network", "Resource Network Connection Type", "Work Master", "Work Directive", "Workflow Specification", "Workflow Specification Node Type", "Workflow Specification Connection Type", "Work Schedule", "Work Request", "Job List", "Job Order", "Work Performance", "Work Response", "Job Response", "Job Response List", "Work Capability", "Work Master Capability", "Work Alert Definition", "Work Alert", "Work Calendar", "Work Calendar Definition", "Work Record", "Work Record Specification", "Batch Production Record", "Control Recipe", "Master Recipe", "GRecipe", "Recipe Element", "Resource Constraint", "Process Element", "Personnel Identification Manifest", "Resource Definition Manifest", "Other"]
+    
+    TransApplicationAreaType:
+      type: object
+      description: Message header information
+      properties:
+        Sender:
+          $ref: '#/components/schemas/TransSenderType'
+        # Receiver:
+        #   description: Zero or more optional identifications of the receiver of the message
+        #   type: array
+        #   items:
+        #     $ref: '#/components/schemas/TransSenderType'
+        #   description: Optional list of receivers, Libre does not need to be in the list of receivers.
+        CreationDateTime:
+          description: A required element with the creation date & time of the message.
+          type: string
+          format: datetime
+        BODID:
+          description: An ID (BODID) to be applied to exchanged data object (message). This should be a GUID (Globally Unique Identifier) that uniquely identifies the data object.
+          type: string
+      required:
+        - CreationDateTime
+        - BODID
+
+    TransChangeStatusType:
+      type: object
+      description: TODO
+      properties:
+        # Code:
+        #   type: string
+        #   description: A user defined element for communication of all codes. No standard code types are defined.
+        # Description:
+        #   type: array
+        #   description: A text description of the overall reason for the response.
+        #   items:
+        #     type: string
+        # EffectiveDateTime:
+        #   type: string
+        #   format: datetime
+        #   description: The effective date and time that response was generated, to allow backtracking of the reason for the response.
+        # ReasonCode:
+        #   type: string
+        #   description: Identifies the reason for the response activity.
+        Reason:
+          type: array
+          description: Text description of the reasons for the response.
+          items:
+            type: string
+        # StateChange:
+        #   type: array
+        #   description: Information about any state changes associated with the response.
+        #   items:
+        #     $ref: '#/components/TransStateChagneType'
+        # UserArea:
+        #   $ref: '#/components/TransUserAreaType'
+
+    TransResponseCriteriaType:
+      type: object
+      properties:
+        ResponseExpression:
+          $ref: '#/components/schemas/TransExpressionType'
+        ChangeStatus:
+          $ref: '#/components/schemas/TransChangeStatusType'
+      required:
+        - ResponseExpression
+
+    TransSenderType:
+      type: object
+      description: Optional identification of the sender of the message.
+      properties:
+        LogicalID:
+          type: string
+          description: Logical name of the sender
+        # ComponentID:
+        #   type: string
+        # ConfirmationCode:
+        #   type: string
+        #   enum: [Always, Never, OnError]
+        #   description: Confirmation will only be send by the party defined as receiver.
+
+    TransReceiverType:
+      type: object
+      properties:
+        LogicalID:
+          type: string
+        ComponentID:
+          type: string
+
+    TransSyncType:
+      type: object
+      properties:
+        ActionCriteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransActionCriteriaType'
+
+    # TransExpression1Type:
+
+    TransExpressionType:
+      type: string
+      description: Response status. Accepted if the original message was processed correctly. Rejected if the original message could not be processed. If Rejected, the ChangeStatus object provides more information on the failure.
+      enum: [Accepted, Rejected] 
+
+    TransGetType:
+      type: object
+      description: Data type for a GET verb in a Get<Object> message. There are no attributes.
+      properties:
+        Expression:
+          type: array
+          items:
+            type: string
+
+    TransAcknowledgeType:
+      type: object
+      properties:
+        OriginalApplicationArea:
+          $ref: '#/components/schemas/TransApplicationAreaType'
+        TransResponseCriteriaType:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransResponseCriteriaType'
+
+    TransProcessType:
+      type: object
+      properties:
+        ActionCriteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransActionCriteriaType'
+
+    TransShowType:
+      type: object
+      properties:
+        OriginalApplicationArea:
+          $ref: '#/components/schemas/TransApplicationAreaType'
+        ResponseCriteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransResponseCriteriaType'
+      required:
+        - OriginalApplicationArea
+        - ResponseCriteria
+
+    TransActionCriteriaType:
+      type: object
+      properties:
+        ActionExpression:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransActionExpressionType'
+          
+    TransActionExpressionType:
+      type: object
+      properties:
+        '@actionCode':
+          type: string
+          enum: ["Add","Change","Delete","Replaced","Accepted","Modified","Rejected"]        
+
+
+    HierarchyScopeType:
+      type: object
+      additionalProperties: false
+      properties:
+        EquipmentID:
+          type: string
+        EquipmentLevel:
+          type: string
+          enum: ["Enterprise","Site","Area","ProcessCell","Unit","ProductionLine","WorkCell","ProductionUnit","StorageZone","StorageUnit","WorkCenter","WorkUnit","EquipmentModule","ControlModule","Other"]
+        HierarchyScopeChild:
+          $ref: './CommonTypes.yaml#/components/schemas/HierarchyScopeType'
+
+
+    ParameterType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Value:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueType'
+        Description:
+          type: array
+          items:
+            type: string
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        ParameterChild:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParameterType'
+        ParameterSpecificationID:
+          type: array
+          items:
+            type: string
+        ProcessSegmentParameterID:
+          type: array
+          items:
+            type: string
+
+
+    DefinitionTypeType:
+      type: string
+      enum: ["Pattern", "Instance"]
+      description: |
+        Defines the type of the definition of a process segment, operations definition, or operations segment.
+        Defined types are:
+        -	Pattern: a segment or definition used as a template for other segments or definitions;
+        -	Instance: a segment or definition that may be directly scheduled and tracked.
+
+
+    DependencyType:
+      oneOf:
+        - $ref: '#/components/schemas/Dependency1Type'
+        - type: object
+          properties:
+            '$':
+              $ref: '#/components/schemas/Dependency1Type'
+            '@OtherValue':
+              type: string
+
+    Dependency1Type:
+      type: string
+      enum: ["NotFollow", "PossibleParallel", "NotInParallel", "AtStart", "AfterStart", "AfterEnd", "NoLaterAfterStart", "NoEarlierAfterStart", "NoLaterAfterEnd", "NoEarlierAfterEnd", "Other"]
+      description: |
+        If “Other” then the type is an application specific extension and the value is defined in the attribute “OtherValue”.
+        
+        Defines an execution dependency constraint of two elements.
+        Defined values are (explained using dependency type between element A and element B)
+        - at start: start B at A start;
+        - after start: start B after A start;
+        - after end: start B after A end;
+        - not follow: B cannot follow A;
+        - possible parallel: B may run in parallel to A;
+        - not in parallel: B may not run in parallel to A;
+        - no later after start: start B no later than dependency factor after A start:
+        - no earlier after start: start B no earlier than dependency factor after A start;
+        - no later after end: start B no later than dependency factor after A end;
+        - no earlier after end: B no earlier than dependency factor after A end.
+
+
+    OpEquipmentRequirementType:
+      type: object
+      properties:
+        ID:
+          type: string
+        EquipmentClassID:
+          type: string
+        EquipmentID:
+          type: string
+        Description:
+          type: string
+        EquipmentUse:
+          type: string
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        OperationalLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        EquipmentLevel:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        EquipmentRequirementChild:
+          $ref: '#/components/schemas/OpEquipmentRequirementType'
+        EquipmentRequirementProperty:
+          $ref: '#/components/schemas/OpEquipmentRequirementPropertyType'
+        RequiredByRequestedSegmentResponse":
+          type: string
+          enum: ["Required", "Optional","Other"]
+        TestSpecificationID:
+          type: string
+
+    OpEquipmentRequirementPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: string
+        Value:
+          $ref: '#/components/schemas/ValueType'
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        EquipmentClassPropertyID:
+          type: string
+        EquipmentPropertyID:
+          type: string
+        EquipmentRequirementPropertyChild:
+          $ref: '#/components/schemas/OpEquipmentRequirementPropertyType'
+        RequiredByRequestedSegmentResponse:
+          type: string
+          enum: ["Required", "Optional","Other"]
+
+    OpPersonnelRequirementType:
+      type: object
+      properties:
+        ID:
+          type: string
+        PersonnelClassID:
+          type: string
+        PersonID:
+          type: string
+        Description:
+          type: string
+        PersonnelUse:
+          type: string
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        OperationalLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        PersonnelRequirementChild:
+          $ref: '#/components/schemas/OpPersonnelRequirementType'
+        PersonnelRequirementProperty:
+          $ref: '#/components/schemas/OpPersonnelRequirementPropertyType'
+        RequiredByRequestedSegmentResponse:
+          type: string
+          enum: ["Required", "Optional","Other"]
+        TestSpecificationID:
+          type: string
+        
+    OpPersonnelRequirementPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: string
+        Value:
+          $ref: '#/components/schemas/ValueType'
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        PersonnelClassPropertyID:
+          type: string
+        PersonPropertyID:
+          type: string
+        PersonnelRequirementPropertyChild:
+          $ref: '#/components/schemas/OpPersonnelRequirementPropertyType'
+        RequiredByRequestedSegmentResponse:
+          type: string
+          enum: ["Required", "Optional","Other"]
+
+    OpPhysicalAssetRequirementType:
+      type: object
+      properties:
+        ID:
+          type: string
+        PhysicalAssetClassID:
+          type: string
+        PhysicialAssetID:
+          type: string
+        Description:
+          type: string
+        PhysicalAssetUse:
+          type: string
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        PhysicalLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        EquipmentLevel:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        PhysicalAssetRequirementChild:
+          $ref: '#/components/schemas/OpPhysicalAssetRequirementType'
+        PhysicalAssetRequirementProperty:
+          $ref: '#/components/schemas/OpPhysicalAssetRequirementPropertyType'
+        RequiredByRequestedSegmentResponse:
+          type: string
+          enum: ["Required", "Optional","Other"]
+        TestSpecificationID:
+          type: string
+
+    OpPhysicalAssetRequirementPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: string
+        Value:
+          $ref: '#/components/schemas/ValueType'
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        PhysicalAssetClassPropertyID:
+          type: string
+        PhysicalAssetPropertyID:
+          type: string
+        PhysicalAssetRequirementPropertyChild:
+          $ref: '#/components/schemas/OpPhysicalAssetRequirementPropertyType'
+        RequiredByRequestedSegmentResponse:
+          type: string
+          enum: ["Required", "Optional","Other"]
+
+    OpMaterialRequirementType:
+      type: object
+      properties:
+        ID:
+          type: string
+        MaterialClassID:
+          type: string
+        MaterialDefinitionID:
+          type: string
+          description: MaterialID.MaterialVersionID
+          examples: 
+            - D0112.1
+        MaterialLotID:
+          type: string
+        MaterialSubLotID:
+          type: string
+        Description:
+          type: string
+        MaterialUse:
+          type: string
+          enum: ["Consumable","Consumed","Produced","By-product Produced","Co-product Produced","Yield Produced","Material Consumed","Material Produced","Destructive Sample","Returned Sample","Retained Sample","Inventoried","Other"]
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        StorageLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        AssemblyRequirement:
+          $ref: '#/components/schemas/OpMaterialRequirementType'
+        AssemblyType:
+          $ref: '#/components/schemas/AssemblyTypeType'
+        AssemblyRelationType:
+          type: string
+          enum: ["Permanent", "Transient", "Other"]
+          description: |
+            Defines the type of the relationships.
+            Defined types are
+            - Permanent: an assembly that is not intended to be split during the production process;
+            - Transient: a temporary assembly using during production, such as a pallet of different materials or a batch kit.
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        MaterialRequirementProperty:
+          $ref: '#/components/schemas/OpMaterialRequirementPropertyType'
+        RequiredByRequestedSegmentResponse:
+          type: string
+          enum: ["Required", "Optional","Other"]
+        TestSpecificationID:
+          type: string
+
+    OpMaterialRequirementPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: string
+        Value:
+          $ref: '#/components/schemas/ValueType'
+        Quantity:
+          $ref: '#/components/schemas/QuantityValueType'
+        MaterialClassPropertyID:
+          type: string
+        MaterialDefinitionPropertyID:
+          type: string
+        MaterialLotPropertyID:
+          type: string
+        MaterialRequirementPropertyChild:
+          $ref: '#/components/schemas/OpMaterialRequirementPropertyType'
+        RequiredByRequestedSegmentResponse:
+          type: string
+          enum: ["Required", "Optional","Other"]
+
+    ValueType:
+      type: object
+      properties:
+        ValueString:
+          type: string
+          description: Defines the value of the data element.
+        DataType:
+          type: string
+          description: Datatype of the provided value.
+          enum: [Amount, BinaryObject, Code, DateTime, Identifier, Indicator, Measure, Numeric, Quantity, Text, string, byte, unsignedByte, binary,integer,positiveInteger,negativeInteger,nonNegativeInteger,nonPositiveInteger,int,unsignedInt,long,unsignedLong,short,unsignedShort,decimal,float,double,boolean,time,timeInstant,timePeriod,duration,date,dateTime,month,year,century,recurringDay,recurringDate,recurringDuration,Name,QName,NCName,uriReference,language,ID,IDREF,IDREFS,ENTITY,ENTITIES,NOTATION,NMTOKEN,NMTOKENS,Enumeration,SVG,Other]
+          examples:
+            - string
+        UnitOfMeasure:
+          description: Unit of Measure for the provided value.
+          type: string
+        Key:
+          type: string
+          description: Defines a unique identification of a data element.
+
+    QuantityValueType:
+      type: object
+      properties:
+        QuantityString:
+          type: string
+        DataType:
+          type: string
+          enum: [Amount, BinaryObject, Code, DateTime, Identifier, Indicator, Measure, Numeric, Quantity, Text, string, byte, unsignedByte, binary,integer,positiveInteger,negativeInteger,nonNegativeInteger,nonPositiveInteger,int,unsignedInt,long,unsignedLong,short,unsignedShort,decimal,float,double,boolean,time,timeInstant,timePeriod,duration,date,dateTime,month,year,century,recurringDay,recurringDate,recurringDuration,Name,QName,NCName,uriReference,language,ID,IDREF,IDREFS,ENTITY,ENTITIES,NOTATION,NMTOKEN,NMTOKENS,Enumeration,SVG,Other]
+          examples:
+            - String
+        UnitOfMeasure:
+          type: string
+        Key:
+          type: string
+
+    ResourceLocationType:
+      type: object
+      description: ""
+      properties:
+        Location:
+          type: string
+        LocationType:
+          type: string
+          enum: ["Person","Personnel Class","Equipment","Equipment Class","Material Class",Material Definition","Material Lot","Material Sublot","Physical Asset","Physical Asset Class","Work Master","Process Segment","Operation Definition","Operational Location","Operations Segment","Test Specification","Test Result","Other"]
+
+
+    OpPersonnelSpecificationType:
+      type: object
+      properites:
+        ID:
+          type: string
+        PersonnelClassID:
+          type: array
+          items:
+            type: string
+        PersonID:
+          type: array
+          items:
+            type: string
+        Description:
+          type: array
+          items:
+            type: string
+        PersonnelUse:
+          type: string
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        OperationalLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        PersonnelSpecificationChild:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpPersonnelSpecificationType'
+        PersonnelSpecificationProperty:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpPersonnelSpecificationPropertyType'
+        TestSpecificationID:
+          type: array
+          items:
+            type: string
+      required:
+        - ID
+
+    OpPersonnelSpecificationPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: array
+          items:
+            type: string
+        Value:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueType'
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        PersonnelClassPropertyID:
+          type: string
+        PersonPropertyID:
+          type: string
+        PersonnelSpecificationPropertyChild:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpPersonnelSpecificationPropertyType'
+      required:
+        - ID
+
+    OpEquipmentSpecificationType:
+      type: object
+      properties:
+        ID:
+          type: string
+        EquipmentClassID:
+          type: array
+          items:
+            type: string
+        EquipmentID:
+          type: array
+          items:
+            type: string
+        Description:
+          type: array
+          items:
+            type: string
+        EquipmentUse:
+          type: string
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        OperationalLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        EquipmentSpecificationChild:
+          type: array
+          items:
+            $ref: './CommonTypes.yaml#/components/schemas/OpEquipmentSpecificationType'
+        EquipmentSpecificationProperty:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpEquipmentSpecificationPropertyType'
+        TestSpecificationID:
+          type: array
+          items:
+            type: string
+      required:
+        - ID
+
+        
+    OpEquipmentSpecificationPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: array
+          items:
+            type: string
+        Value:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueType'
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        EquipmentClassPropertyID:
+          type: string
+        EquipmentPropertyID:
+          type: string
+        EquipmentSpecificationPropertyChild:
+          type: array
+          items:
+            $ref: './CommonTypes.yaml#/components/schemas/OpEquipmentSpecificationPropertyType'
+      required:
+        - ID
+
+
+    OpPhysicalAssetSpecificationType:
+      type: object
+      properties:
+        ID:
+          type: string
+        PhysicalAssetClassID:
+          type: array
+          items:
+            type: string
+        PhysicalAssetID:
+          type: array
+          items:
+            type: string
+        Description:
+          type: array
+          items:
+            type: string
+        PhysicalAssetUse:
+          type: string
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        PhysicalLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        PhysicalAssetSpecificationChild:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpPhysicalAssetSpecificationType'
+        PhysicalAssetSpecificationProperty:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpPhysicalAssetSpecificationPropertyType'
+        TestSpecificationID:
+          type: array
+          items:
+            type: string
+      required:
+        - ID        
+
+
+    OpPhysicalAssetSpecificationPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: array
+          items:
+            type: string
+        Value:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueType'
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        PhysicalAssetClassPropertyID:
+          type: string
+        PhysicalAssetPropertyID:
+          type: string
+        PhysicalAssetSpecificationPropertyChild:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpPhysicalAssetSpecificationPropertyType'
+      required:
+        - ID
+
+
+    OpMaterialSpecificationType:
+      type: object
+      properties:
+        ID:
+          type: string
+        MaterialClassID:
+          type: array
+          items:
+            type: string
+        MaterialDefinitionID:
+          type: array
+          items:
+            type: string
+        MaterialLotID:
+          type: array
+          items:
+            type: string
+        MaterialSubLotID:
+          type: array
+          items:
+            type: string
+        Description:
+          type: array
+          items:
+            type: string
+        MaterialUse:
+          type: string
+        HierarchyScope:
+          $ref: '#/components/schemas/HierarchyScopeType'
+        StorageLocation:
+          $ref: '#/components/schemas/ResourceLocationType'
+        SpatialDefinition:
+          type: string
+          description: |
+            The spatial definition provides a means of communicating zero-dimensional point, one-dimensional line,
+            or two-dimensional shape or three-dimensional solid geospatial location data for planning/scheduling,
+            actuals, resources, and analytics.
+            Spatial definition identifies a value and the predefined coordinate reference system.
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        AssemblySpecification:
+          type: array
+          items:
+            $ref: './CommonTypes.yaml#/components/schemas/OpMaterialSpecificationType'
+        AssemblyType:
+          $ref: '#/components/schemas/AssemblyTypeType'
+        AssemblyRelationship:
+          type: string
+          enum: [Permanent,Transient,Other]
+        MaterialSpecificationProperty:
+          type: array
+          items:
+            $ref: './CommonTypes.yaml#/components/schemas/OpMaterialSpecificationPropertyType'
+        TestSpecificationID:
+          type: array
+          items:
+            type: string
+      required:
+        - ID
+
+
+    OpMaterialSpecificationPropertyType:
+      type: object
+      properties:
+        ID:
+          type: string
+        Description:
+          type: array
+          items:
+            type: string
+        Value:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueType'
+        Quantity:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuantityValueType'
+        MaterialClassPropertyID:
+          type: string
+        MaterialPropertyID:
+          type: string
+        MaterialSpecificationPropertyChild:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpMaterialSpecificationPropertyType'
+      required:
+        - ID
+
+    DispositionType:
+      description: |
+        Defines Planning and logistics disposition of a material lot or assembly of material lots.
+        Defined values for the disposition of a material lot are
+        - Planned: a material lot that does not yet physically exist, is assigned to an operations request (segment requirement) or work request (Part 4 object) or job order (Part 4 object);
+        - In process: the material lot is in the process of being worked on;
+        - Restricted: a material lot is not permitted for normal use due to a restriction condition.
+          EXAMPLE 5 A material lot can be awaiting a quality decision or a material lot can be physically inaccessible.
+        - Unrestricted:  material lot is permitted for normal use without restriction; and
+        - Closed:   material lot has been reconciled as completely consumed, sold or disposed of.
+      oneOf:
+        - $ref: '#/components/schemas/Disposition1Type'
+        - type: object
+          properties:
+            '$':
+              $ref: '#/components/schemas/Disposition1Type'
+            '@OtherValue':
+              type: string
+
+    Disposition1Type:
+      type: string
+      description: If “Other” then the type is an application specific extension and the value is defined in the attribute “OtherValue”.
+      enum: ["Planned", "In-Process", "Restricted", "UnRestricted", "Closed", "Other"]
+
+
+    AssemblyRelationshipType:
+      description: |
+        Defines the type of the relationships.
+        Defined types are
+        - Permanent: an assembly that is not intended to be split during the production process;
+        - Transient: a temporary assembly using during production, such as a pallet of different materials or a batch kit.
+      oneOf:
+        - $ref: '#/components/schemas/AssemblyRelationship1Type'
+        - type: object
+          properties:
+            '$':
+              $ref: '#/components/schemas/AssemblyRelationship1Type'
+            '@OtherValue':
+              type: string
+
+    AssemblyRelationship1Type:
+      type: string
+      description: If “Other” then the type is an application specific extension and the value is defined in the attribute “OtherValue”.
+      enum: ["Permanent", "Transient", "Other"]
+
+
+    AssemblyTypeType:
+      description: |
+        Defines the type of the assembly.
+        Defined types are
+        - physical: the components of the assembly are physically connected or in the same area.
+        - logical: the components of the assembly are not necessarily physically connected or in the same area.
+      oneOf:
+        - $ref: '#/components/schemas/AssemblyType1Type'
+        - type: object
+          properties:
+            '$':
+              $ref: '#/components/schemas/AssemblyType1Type'
+            '@OtherValue':
+              type: string
+
+    AssemblyType1Type:
+      type: string
+      description: If “Other” then the type is an application specific extension and the value is defined in the attribute “OtherValue”.
+      enum: ["Physical", "Logical", "Other"]
+
+    GRecipeMaterialType:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: A unique identification of the material instance within the process. Set to '-1' if unknown.
+        MaterialID:
+          type: string
+          description: The identifier of the material (linked to master material definitions). Set to '-1' if unknown.
+        Amount:
+          type: object
+          description: The quantity of the material.
+          properties:
+            QuantityString:
+              type: string
+              description: The quantity, formatted as text.
+          required:
+          - QuantityString
+        Order:
+          type: string
+          description: Sequence number for the material in the processing order.
+      required:
+      - ID
+      - MaterialID
+      - Amount
+    

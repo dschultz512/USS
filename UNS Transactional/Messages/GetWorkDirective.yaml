@@ -1,0 +1,11 @@
+components:
+  messages:
+    GetGeneralRecipeInformation:
+      name: GetGeneralRecipeInformation
+      payload:
+        type: object
+        properties:
+          GetGeneralRecipeInformation:
+            $ref: '../Components/GetWorkDirectiveType.yaml#/components/schemas/GetGeneralRecipeInformation'
+        examples:
+          $ref: '../Examples/GetWorkDirective.yaml#/components/messages/GetGeneralRecipeInformation/payload/examples'

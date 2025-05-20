@@ -1,0 +1,9 @@
+site
+node_modules
+example
+docs
+Drawings/*.png
+images/*
+*.bkp
+*.dtmp
+*.backup

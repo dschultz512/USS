@@ -1,0 +1,28 @@
+components:
+  messages:
+    ProcessBatchProductionRecord:
+      payload:
+        examples:
+        - ProcessBatchProductionRecord:
+            "@releaseID": '1.0'
+            ApplicationArea:
+              BODID: ea3690ef-f7ca-4359-ba85-eb0d3ec221af
+              CreationDateTime: '2024-07-18T15:24:35Z'
+              Sender:
+                LogicalID: PLC-123-HMI-345
+            DataArea:
+              Process: {}
+              BatchProductionRecord:
+              - ID: Order-1234567
+                EntryID: "-1"
+                ObjectType: Event
+                EquipmentID: MIX-123
+                Events:
+                  Event:
+                  - EntryID: "-1"
+                    ObjectType: Event
+                    EventType: Procedural Execution
+                    EventSubType: State Change
+                    Value:
+                    - Key: NewState
+                      ValueString: Running

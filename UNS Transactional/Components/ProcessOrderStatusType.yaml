@@ -1,0 +1,107 @@
+components:
+
+  schemas:
+    ProcessBatchProductionRecordType:
+      # $ref: "https://json.libremfg.ai/schemas/v2.0.1.batchProductionRecord.schema.json#/$defs/ProcessBatchProductionRecordType"
+      type: object
+      properties:
+        '@releaseID':
+          type: string
+          description: Interface release ID.
+          examples:
+            - 1.0.0
+        # '@versionID':
+        #   type: string
+        ApplicationArea:
+          $ref: './CommonTypes.yaml#/components/schemas/TransApplicationAreaType'
+        DataArea:
+          type: object
+          description: Message data to be exchanged
+          properties:
+            Process:
+              $ref: './CommonTypes.yaml#/components/schemas/TransProcessType'
+            BatchProductionRecord:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/BatchProductionRecordEntryType'
+          required:
+            - Process
+            - BatchProductionRecord
+      required:
+        - '@releaseID'
+        - ApplicationArea
+        - DataArea
+    
+    BatchProductionRecordEntryType:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: A unique identification of the BPR. Set to '-1' if unknown.
+        EntryID:
+          type: string
+          description: A unique identification of the BPR individual element. Set to '-1' in unknown.
+        ObjectType:
+          type: string
+          description: |
+            Identifies the type of object an entry is based upon. This may be either a standard type or an application specific extended type.
+            <b>For this message the value 'Work Schedule' is used.</b>
+          enum: ["Batch Production Record","Change","Comment","Control Recipe","Data Set","Event","Master Recipe","Personnel Identification Manifest","Resource Definition Manifest","Recipe Element","Sample","Sample Test","Sample Test Result","Work Directive","Work Master","Work Performance","Work Schedule","Other"]
+          example: "Work Schedule"
+        EquipmentID:
+          type: string
+          description: "Equipment hierarchy. Each item is optional, if not filled in the pipe will be empty. {Enterprise}|{Site}|{Area}|{Work Cell}|{Work Unit}|{Equipment Module}|{Control Module}"
+        Events:
+          $ref: '#/components/schemas/EventsType'
+
+      required:
+        - ID
+        - EntryID
+        - ObjectType
+        - Events
+    
+    EventsType:
+      type: object
+      properties:
+        Event:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventType'
+      required:
+        - Event
+    
+    EventType:
+      type: object
+      properties:
+        EntryID:
+          type: string
+          description: ID which is unique within the scope of a batch production record. Set to '-1' if unknown.
+        ObjectType:
+          type: string
+          description: Identifies the type of object an entry is based upon. 
+        EventType:
+          type: string
+          description: Defines the type of the event
+        EventSubType:
+          type: string
+          description: Defines the subtype of the event. 
+        Value:
+          $ref: '#/components/schemas/ValueType'
+      required:
+      - EntryID
+
+    
+    ValueType:
+      type: array
+      description: "An array of key value pairs. <b>For this message we require the keys:\ 'NewState' describing the current state of the JobOrder.</b>"
+      items:
+        type: object
+        properties:
+          Key:
+            type: string
+            description: Defines a unique identification of a data element.
+          ValueString:
+            type: string
+            description: Defines the value of the data element.
+        

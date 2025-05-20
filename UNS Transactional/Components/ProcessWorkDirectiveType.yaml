@@ -1,0 +1,117 @@
+components:
+
+  schemas:
+    ProcessGeneralRecipeInformation:
+      type: object
+      properties:
+        '@releaseID':
+          type: string
+          description: Interface release ID.
+          examples:
+            - 1.0.0
+        ApplicationArea:
+          $ref: './CommonTypes.yaml#/components/schemas/TransApplicationAreaType'
+        DataArea:
+          $ref: '#/components/schemas/DataAreaType'
+      required:
+      - '@releaseID'
+    DataAreaType:
+      type: object
+      description: Message data to be exchanged
+      properties:
+        Process:
+          $ref: './CommonTypes.yaml#/components/schemas/TransProcessType'
+        GeneralRecipeInformation:
+          $ref: '#/components/schemas/GRecipeInformationType'
+      required:
+      - GeneralRecipeInformation
+    GRecipeInformationType:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: A unique identification of the General Recipe. Set to '-1' if unknown.
+        Recipe:
+          $ref: '#/components/schemas/GRecipeType'
+      required:
+      - ID
+      - Recipe
+    GRecipeType:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: A unique identification of a specific recipe. Set to '-1' if unknown.
+        Formula:
+          $ref: '#/components/schemas/GRecipeFormulaType'
+      required:
+      - ID
+    GRecipeFormulaType:
+      type: object
+      description: Defines the set of inputs, outputs, intermediates, and parameters used in the process
+      properties:
+        ProcessInputs:
+          $ref: '#/components/schemas/ProcessInputsType'
+        ProcessIntermediates:
+          $ref: '#/components/schemas/ProcessIntermediatesType'
+        ProcessOutputs:
+          $ref: '#/components/schemas/ProcessOutputsType'
+        ProcessElementParameter:
+          $ref: '#/components/schemas/ProcessElementParameterType'
+    ProcessInputsType:
+      type: object
+      description: Group of material inputs used in the process
+      properties:
+        Material:
+          type: array
+          items:
+            $ref: './CommonTypes.yaml#/components/schemas/GRecipeMaterialType'
+    ProcessIntermediatesType:
+      type: object
+      description: Materials partially processed and reused later in the recipe
+      properties:
+        Material:
+          type: array
+          items:
+            $ref: './CommonTypes.yaml#/components/schemas/GRecipeMaterialType'
+    ProcessOutputsType:
+      type: object
+      description: Final product or result of the process
+    ProcessElementParameterType:
+      type: object
+      description: List of process parameters (e.g., temperature, pressure) controlling the process
+      properties:
+        ID:
+          type: string
+          description: A unique identification of the parameter. Set to '-1' if unknown.
+        ProcessElementParameterType:
+          type: array
+          items:
+            type: string
+            "enum": ["Setpoint", "Actual", "Limit", "Target", "Constant", "Input", "Output", "Optional", "Reference", "Required", "Other"]
+        Value:
+          $ref: '#/components/schemas/ValueType'
+      required:
+      - ID
+      - Value
+    ValueType:
+      type: array
+      description: "An array of key value pairs. <b>For this message we require the keys:\ 'NewState' describing the current state of the batch.\ 'Step' describing the current step. Examples: '1', 'step 1', 'filling', 'mixing'.</b>"
+      items:
+        type: object
+        properties:
+          Key:
+            type: string
+            description: Defines a unique identification of a data element.
+          ValueString:
+            type: string
+            description: Defines the value of the data element.
+          UnitOfMeasure:
+            description: Unit of Measure for the provided value.
+            type: string
+          DataType:
+            type: string
+            description: Datatype of the provided value.
+            enum: [Amount, BinaryObject, Code, DateTime, Identifier, Indicator, Measure, Numeric, Quantity, Text, string, byte, unsignedByte, binary,integer,positiveInteger,negativeInteger,nonNegativeInteger,nonPositiveInteger,int,unsignedInt,long,unsignedLong,short,unsignedShort,decimal,float,double,boolean,time,timeInstant,timePeriod,duration,date,dateTime,month,year,century,recurringDay,recurringDate,recurringDuration,Name,QName,NCName,uriReference,language,ID,IDREF,IDREFS,ENTITY,ENTITIES,NOTATION,NMTOKEN,NMTOKENS,Enumeration,SVG,Other]
+            examples:
+            - string

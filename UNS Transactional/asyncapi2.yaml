@@ -1,0 +1,186 @@
+asyncapi: 2.6.0
+
+info:
+  title: Rhize Manufacturing Data Hub - GMI
+  version: 1.0.0
+  description: |
+    Version: MAJOR.MINOR.PATCH (based on semver)\
+    Published: 04-9-2025
+
+    About This API Documentation
+
+    This document describes the enterprise message of Manufacturing events within the Standard Equipment Interface.
+    The primary mechanism for layer 2 integration includes a Batch Production Record.
+
+    This AsyncAPI document describes the MQTT-based interface from the perspective of the Rhize Manufacturing Data Hub.
+    - <b>publish</b> operations indicate that this application sends messages to the MQTT broker on the specified topic.
+    - <b>subscribe</b> operations indicate that this application receives messages from the MQTT broker on the specified topic.
+    
+    Based on B2MML-BatchML V0701\
+    Validation schemas:
+    - [json validation schema](https://json.libremfg.ai/schemas/v1.0.0.base.schema.json)
+
+servers:
+  Dev:
+    url: tbd:{port}
+    protocol: mqtt
+    description: Development Environment
+    variables:
+      port: 
+        default: "8883"
+  Test:
+    url: tbd:{port}
+    protocol: mqtt
+    description: Test Environment
+    variables:
+      port: 
+        default: "8883"
+
+channels:
+  ProcessWorkSchedule:
+    description: On order dispatch, MES will download the work schedule containing the basis information of the order (order id, order name, scheduled product, quantity). This allows Controls/SCADA to give an overview of all available orders relevant for production.
+    bindings:
+      mqtt:
+        Topic: "mdh-ml/v1/{hierarchyScope}/WorkSchedule/PROCESS"
+        Parameters:
+          hierarchyScope (optional):
+            description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. Typically the WorkSchedule is shared on Work Center level.
+            type: string
+            examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+    publish:
+      message:
+        $ref: './Messages/ProcessWorkSchedule.yaml#/components/messages/ProcessBatchProductionRecord'
+  GetWorkDirective:
+    description: Once there is an active order on the given work unit, controls can request a Work Directive from MES. The Work Directive contains detailed production information including Bill of Materials, product parameters, equipment parameters. The response of this message is returned in the channel "ShowWorkDirective".
+    bindings:
+      mqtt:
+        Topic: "mdh-ml/v1/{hierarchyScope}/WorkDirective/GET"
+        Parameters:
+          hierarchyScope (optional):
+            description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. Typically the WorkDirective is shared on Work Unit level.
+            type: string
+            examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+    subscribe:
+      message:
+        $ref: './Messages/GetWorkDirective.yaml#/components/messages/GetGeneralRecipeInformation'
+  ShowWorkDirective:
+    description: This message is the response of the "GetWorkDirective". The Work Directive contains detailed production information including Bill of Materials, product parameters, equipment parameters. 
+    bindings:
+      mqtt:
+        Topic: "mdh-ml/v1/{hierarchyScope}/WorkDirective/SHOW"
+        Parameters:
+          hierarchyScope (optional):
+            description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. Typically the WorkDirective is shared on Work Unit level.
+            type: string
+            examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+    publish:
+      message:
+        $ref: './Messages/ShowWorkDirective.yaml#/components/messages/ShowGeneralRecipeInformation'
+  ProcessWorkDirective:
+    description: Once there is an active order on the given work unit, MES can provide the Work Directive to Controls. The Work Directive contains detailed production information including Bill of Materials, product parameters, equipment parameters.
+    bindings:
+      mqtt:
+        Topic: "mdh-ml/v1/{hierarchyScope}/WorkDirective/PROCESS"
+        Parameters:
+          hierarchyScope (optional):
+            description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. Typically the WorkDirective is shared on Work Unit level.
+            type: string
+            examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+    publish:
+      message:
+        $ref: './Messages/ProcessWorkDirective.yaml#/components/messages/ProcessGeneralRecipeInformation'
+  ProcessOrderStatus:
+    description: This message is used when the JobOrder status is updated from controls. As soon as the JobOrder is started or completed, MES is notified about the start and the location (Work Unit) of execution. This message can be used to start and complete a JobOrder.
+    bindings:
+      mqtt:
+        Topic: "mdh-ml/v1/{hierarchyScope}/OrderStatus/PROCESS"
+        Parameters:
+          hierarchyScope (optional):
+            description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. Typically the JobOrderStatus is shared on Work Unit level.
+            type: string
+            examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+    subscribe:
+      message:
+        $ref: './Messages/ProcessOrderStatus.yaml#/components/messages/ProcessBatchProductionRecord'
+  ProcessBatchStatus:
+    description: This message is used when the JobOrder status for the Batch is updated from controls. As soon as the batch is started or completed, MES is notified about the start and the location (Work Unit) of execution. This message can be used to start and complete a JobOrder batch.
+    bindings:
+      mqtt:
+        Topic: "mdh-ml/v1/{hierarchyScope}/BatchStatus/PROCESS"
+        Parameters:
+          hierarchyScope (optional):
+            description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. Typically the JobOrderStatus is shared on Work Unit level.
+            type: string
+            examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+    subscribe:
+      message:
+        $ref: './Messages/ProcessBatchStatus.yaml#/components/messages/ProcessBatchProductionRecord'
+  ProcessMaterialActual:
+    description: This message is used to register a material consumption or production against the active JobOrder on the Work Unit. 
+    bindings:
+      mqtt:
+        Topic: "mdh-ml/v1/{hierarchyScope}/MaterialActual/PROCESS"
+        Parameters:
+          hierarchyScope (optional):
+            description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. A Material Actual is shared on Work Unit level.
+            type: string
+            examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+    subscribe:
+      message:
+        $ref: './Messages/ProcessMaterialActual.yaml#/components/messages/ProcessBatchProductionRecord'
+
+  ProcessEquipmentStatus:
+      description: During production, controls can inform MES of the equipment status. It might happen that an alarm or event occurs and the production stops. This interface allows controls to share this event with MES. MES records all information which can be used for performance and downtime analysis.
+      bindings:
+        mqtt:
+          Topic: "mdh-ml/v1/{hierarchyScope}/EquipmentStatus/PROCESS"
+          Parameters:
+            hierarchyScope (optional):
+              description: A slash delimited path for the hierarchy Scope of the exchanged information. The hierarchy scope has the following format {Enterprise}/{Site}/{Area}/{WorkCenter} or {StorageZone}/{WorkUnit} or {Storage Unit}/. A Material Actual is shared on Work Unit level.
+              type: string
+              examples:
+              - GMI
+              - GMI/CR
+              - GMI/CR/Manufacturing
+              - GMI/CR/Manufacturing/FED028
+              - GMI/CR/Manufacturing/FED028/MIX-082
+      subscribe:
+        message:
+          $ref: './Messages/ProcessEquipmentStatus.yaml#/components/messages/ProcessBatchProductionRecord'
+
+

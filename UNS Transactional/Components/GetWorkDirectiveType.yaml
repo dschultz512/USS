@@ -1,0 +1,46 @@
+components:
+
+  schemas:
+    GetGeneralRecipeInformation:
+      type: object
+      properties:
+        '@releaseID':
+          type: string
+          description: Interface release ID.
+          examples:
+            - 1.0.0
+        ApplicationArea:
+          $ref: './CommonTypes.yaml#/components/schemas/TransApplicationAreaType'
+        DataArea:
+          $ref: '#/components/schemas/DataAreaType'
+      required:
+      - '@releaseID'
+    DataAreaType:
+      type: object
+      description: Message data to be exchanged
+      properties:
+        Get:
+          $ref: './CommonTypes.yaml#/components/schemas/TransGetType'
+        GeneralRecipeInformation:
+          $ref: '#/components/schemas/GRecipeInformationType'
+      required:
+      - GeneralRecipeInformation
+    GRecipeInformationType:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: A unique identification of the GRecipeInformation. Set to '-1' if unknown.
+        Recipe:
+          $ref: '#/components/schemas/GRecipeType'
+      required:
+      - Recipe
+
+    GRecipeType:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: A unique identification of a specific recipe.
+      required:
+      - ID

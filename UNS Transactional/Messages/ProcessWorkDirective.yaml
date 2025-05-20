@@ -1,0 +1,11 @@
+components:
+  messages:
+    ProcessGeneralRecipeInformation:
+      name: ProcessGeneralRecipeInformation
+      payload:
+        type: object
+        properties:
+          ProcessGeneralRecipeInformation:
+            $ref: '../Components/ProcessWorkDirectiveType.yaml#/components/schemas/ProcessGeneralRecipeInformation'
+        examples:
+          $ref: '../Examples/ProcessWorkDirective.yaml#/components/messages/ProcessGeneralRecipeInformation/payload/examples'

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.libremfg.ai/schemas/v1.0.0.base.schema.json",
+  "GetGeneralRecipeInformation": {
+    "@releaseID": "1.0",
+    "ApplicationArea": {
+      "CreationDateTime": "2025-03-03T12:00:00"
+    },
+    "DataArea": {
+      "Get": {},
+      "GeneralRecipeInformation": [
+        {
+          "Recipe": [
+            {
+              "ID": "Recipe-1"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

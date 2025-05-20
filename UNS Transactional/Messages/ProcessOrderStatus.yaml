@@ -1,0 +1,11 @@
+components:
+  messages:
+    ProcessBatchProductionRecord:
+      name: ProcessBatchProductionRecord
+      payload:
+        type: object
+        properties:
+          ProcessBatchProductionRecord:
+            $ref: '../Components/ProcessOrderStatusType.yaml#/components/schemas/ProcessBatchProductionRecordType'
+        examples:
+          $ref: '../Examples/ProcessOrderStatus.yaml#/components/messages/ProcessBatchProductionRecord/payload/examples'

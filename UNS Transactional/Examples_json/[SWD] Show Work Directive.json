@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json.libremfg.ai/schemas/v1.0.0.base.schema.json",
+  "ShowGeneralRecipeInformation": {
+    "@releaseID": "1.0",
+    "ApplicationArea": {
+      "CreationDateTime": "2025-03-03T12:00:00"
+    },
+    "DataArea": {
+      "Show": {},
+      "GeneralRecipeInformation": [
+        {
+          "ID": "Order-1234567",
+          "Recipe": [
+            {
+              "ID": "Recipe-1",
+              "Formula": {
+                "ProcessInputs": {
+                  "Material": [
+                    {
+                      "ID": "1",
+                      "MaterialID": "Mat-123",
+                      "Amount": {
+                        "QuantityString": "100.2"
+                      },
+                      "Order": "0010"
+                    }
+                  ]
+                },
+                "ProcessIntermediates": {
+                  "Material": [
+                    {
+                      "ID": "1",
+                      "MaterialID": "Mat-123",
+                      "Amount": {
+                        "QuantityString": "50.0"
+                      },
+                      "Order": "0020"
+                    }
+                  ]
+                },
+                "ProcessOutputs": {},
+                "ProcessElementParameter": [
+                  {
+                    "ID": "Temperature",
+                    "Value": [{
+                      "Key": "target",
+                      "ValueString": "200",
+                      "UnitOfMeasure": "F",
+                      "DataType": "integer"
+                    }]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
