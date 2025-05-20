@@ -1,0 +1,30 @@
+@startuml WorkSchedule
+title "Work Schedule"
+
+Actor "User" as U #D5E8D4
+participant "PLC" as P #E1D5E7
+participant "SCADA" as S #DAE8FC
+participant "GUI" as UI #DAE8FC
+database "MES" as M #DAE8FC
+
+==Operator Workflow for Exchange of MES to Schedule Information==
+autonumber 0 "<b>000"
+
+  M -> S++: Send Work Schedule
+  note right of S: <b>Contract 01:</b>\nLogic executed:\n
+  U -> UI --: Stocker requests schedule in legacy schedule system to find coil in Warehouse
+  U -> U : Coil in Warehouse marked with Schedule Number
+  U -> U : Operations Area Manager schedules people based on Work Schedule
+  U -> U : Picker gets coil, move in front of line
+  U -> S : Main Operator modifies Schedule based on current conditions
+  U -> U : Coil basrcode is scanned
+  S -> S : Create PDI
+  U -> S : Operator views Schedule
+  U -> U : Operator executes Schedule
+  S -> P : PLC receives PDI
+  note right of P : <b>Contract 02:</b>\m Logic executed:\n
+  P -> P : Coil moves on to mandrel
+  S -> M : Send Work Performance
+  note right of S: <b>Contract 03:</b>\nLogic executed:\n
+
+@enduml
